@@ -24,7 +24,7 @@ services:
   django:
     build: .
     restart: always
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py migrate && gunicorn django_backend.wsgi -w 8 -t 300 -b 0.0.0.0:8000"
+    command: bash -c "python wait_for_pg.py && python manage.py makemigrations && python manage.py migrate && python manage.py migrate && gunicorn django_backend.wsgi -w 8 -t 300 -b 0.0.0.0:8000"
     volumes:
       - ./backend:/var/www/backend
     expose:
@@ -39,6 +39,8 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - postgres-logs:/var/log/postgresql
       - ./database-backup:/database-backup
+    environment: 
+      - POSTGRES_HOST_AUTH_METHOD=trust
 volumes:
   postgres-config:
   postgres-data:
